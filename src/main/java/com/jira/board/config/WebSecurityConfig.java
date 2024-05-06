@@ -8,7 +8,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
@@ -33,8 +32,8 @@ public class WebSecurityConfig {
         httpSecurity
             .csrf((auth) -> auth.disable());
 
-        httpSecurity
-            .cors((auth) -> auth.disable());
+        // httpSecurity
+        //     .cors((auth) -> auth.disable());
 
         httpSecurity
             .formLogin((auth) -> auth.disable());
@@ -47,8 +46,8 @@ public class WebSecurityConfig {
 
         httpSecurity 
             .authorizeHttpRequests((auth) -> auth
-            .requestMatchers("/","/api/v1/asuth/**","/api/v1/search/**", "/file/**").permitAll()
-            .requestMatchers(HttpMethod.GET, "/api/v1/board/**", "/api/v1/user/*").permitAll()
+            .requestMatchers("/","/api/v1/auth/**","/api/v1/search/**", "/file/**").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/v1/board/**", "/api/v1/user/**").permitAll()
             .anyRequest().authenticated());
 
         httpSecurity.exceptionHandling((exceptionHandle) -> exceptionHandle.authenticationEntryPoint(new FailedAuthenticationEntryPoint()));
@@ -66,7 +65,6 @@ class FailedAuthenticationEntryPoint  implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
             AuthenticationException authException) throws IOException, ServletException {
-
                 response.setContentType("application/json");
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.getWriter().write("{\"code:\": \"AF\" , \"message\": \"Authorization Failed.\" }");
