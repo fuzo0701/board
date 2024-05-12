@@ -4,12 +4,14 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.jira.board.entity.FavoriteEntity;
 import com.jira.board.entity.primaryKey.FavoritePk;
 import com.jira.board.repository.resultSet.GetFavoriteListResultSet;
 
 public interface FavoriteRepository extends JpaRepository<FavoriteEntity, FavoritePk> {
+    
     FavoriteEntity findByBoardNumberAndUserEmail(Integer boardNumber, String userEmail);
 
     @Query(
@@ -24,5 +26,8 @@ public interface FavoriteRepository extends JpaRepository<FavoriteEntity, Favori
         nativeQuery = true
     )
     List<GetFavoriteListResultSet> getFavoriteList(Integer boardNumber);
+
+     @Transactional
+    void deleteByBoardNumber(Integer boardNumber);
     
 }

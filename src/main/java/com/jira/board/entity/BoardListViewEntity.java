@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Table(name="board_list_view")
 public class BoardListViewEntity {
     
-    @ Id
+    @Id
     private int boardNumber;
     private String title;
     private String content;
@@ -25,6 +25,6 @@ public class BoardListViewEntity {
     private String writeDatetime;
     private String writerEmail;
     private String writerNickname;
-    private String wirterProfileImage;
+    private String writerProfileImage;
 
 }

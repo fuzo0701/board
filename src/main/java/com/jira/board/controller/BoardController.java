@@ -3,19 +3,27 @@ package com.jira.board.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jira.board.dto.request.board.PatchBoardRequestDto;
 import com.jira.board.dto.request.board.PostBoardRequestDto;
 import com.jira.board.dto.request.board.PostCommentRequestDto;
+import com.jira.board.dto.response.board.DeleteBoardResponseDto;
 import com.jira.board.dto.response.board.GetBoardResponseDto;
 import com.jira.board.dto.response.board.GetCommentListReponseDto;
 import com.jira.board.dto.response.board.GetFavoriteListResponseDto;
+import com.jira.board.dto.response.board.GetLatestBoardListResponseDto;
+import com.jira.board.dto.response.board.GetSearchBoardListResponseDto;
+import com.jira.board.dto.response.board.GetTop3BoardListResponseDto;
 import com.jira.board.dto.response.board.IncreaseViewCountResponseDto;
+import com.jira.board.dto.response.board.PatchBoardResponseDto;
 import com.jira.board.dto.response.board.PostBoardResponseDto;
 import com.jira.board.dto.response.board.PostCommentResponseDto;
 import com.jira.board.dto.response.board.PutFavoriteResponseDto;
@@ -24,6 +32,8 @@ import com.jira.board.service.BoardService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+
 
 
 @RestController
@@ -94,6 +104,47 @@ public class BoardController {
     @GetMapping("/{boardNumber}/increase-view-count")
     public ResponseEntity<? super IncreaseViewCountResponseDto> increaseViewCount( @PathVariable("boardNumber") Integer boardNumber){
         ResponseEntity<? super IncreaseViewCountResponseDto> response = boardService.increaseViewCount(boardNumber);
+        return response;
+    }
+
+
+    @RequestMapping(value = "/{boardNumber}", method = RequestMethod.DELETE)
+    public ResponseEntity<? super DeleteBoardResponseDto> deleteBoard(
+        @PathVariable("boardNumber") Integer boardNumber,
+        @AuthenticationPrincipal String email
+    ){
+        ResponseEntity<? super DeleteBoardResponseDto> response = boardService.deleteBoard(boardNumber, email);
+        return response;
+    }
+
+    @PatchMapping("/{boardNumber}")
+    public ResponseEntity<? super PatchBoardResponseDto> patchBoard(
+        @RequestBody @Valid PatchBoardRequestDto requestBdoy,
+        @PathVariable("boardNumber") Integer boardNumber,
+        @AuthenticationPrincipal String email
+    ){
+        ResponseEntity<? super PatchBoardResponseDto> response = boardService.patchBoard(requestBdoy, boardNumber, email);
+        return response;
+    }
+
+    @GetMapping("/latest-list")
+    public ResponseEntity<? super GetLatestBoardListResponseDto> getLatestBoardList() {
+        ResponseEntity<? super GetLatestBoardListResponseDto> response = boardService.getLatestBoardList();
+        return response;
+    }
+
+    @GetMapping("/top-3")
+    public ResponseEntity<? super GetTop3BoardListResponseDto> getTop3BoardList() {
+        ResponseEntity<? super GetTop3BoardListResponseDto> response = boardService.getTop3BoardList();
+        return response;
+    }
+
+    @GetMapping(value = {"/search-list/{searchWord}","/search-list/{searchWord}/{preSearchWord}"})
+    public ResponseEntity<? super GetSearchBoardListResponseDto> getSearchBoardList(
+        @PathVariable("searchWord") String searchWord,
+        @PathVariable(value="preSearchWord", required = false) String preSearchWord
+    ) {
+        ResponseEntity<? super GetSearchBoardListResponseDto> response = boardService.getSearchBoardList(searchWord, preSearchWord);
         return response;
     }
     
