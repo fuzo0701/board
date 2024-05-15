@@ -22,6 +22,7 @@ import com.jira.board.dto.response.board.GetFavoriteListResponseDto;
 import com.jira.board.dto.response.board.GetLatestBoardListResponseDto;
 import com.jira.board.dto.response.board.GetSearchBoardListResponseDto;
 import com.jira.board.dto.response.board.GetTop3BoardListResponseDto;
+import com.jira.board.dto.response.board.GetUserBoardListResponseDto;
 import com.jira.board.dto.response.board.IncreaseViewCountResponseDto;
 import com.jira.board.dto.response.board.PatchBoardResponseDto;
 import com.jira.board.dto.response.board.PostBoardResponseDto;
@@ -32,6 +33,8 @@ import com.jira.board.service.BoardService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 
@@ -147,6 +150,13 @@ public class BoardController {
         ResponseEntity<? super GetSearchBoardListResponseDto> response = boardService.getSearchBoardList(searchWord, preSearchWord);
         return response;
     }
+
+    @GetMapping("/user-board-list/{email}")
+    public ResponseEntity<? super GetUserBoardListResponseDto> getUserBoardList(@PathVariable("email") String email) {
+        ResponseEntity<? super GetUserBoardListResponseDto> response = boardService.getUserBoardList(email);
+        return response;
+    }
+    
     
     
 }

@@ -16,6 +16,7 @@ public class BadRequestExceptionHandler {
     @ExceptionHandler({MethodArgumentNotValidException.class, HttpMessageNotReadableException.class})
     public ResponseEntity<ResponseDto> validationExceptionHandler(Exception exception){
         log.debug("BadRequestExceptionHandler : " + exception.toString());  
+        System.out.println("BadRequestExceptionHandler : " + exception.toString());
         return ResponseDto.validationFailed();
     }
     

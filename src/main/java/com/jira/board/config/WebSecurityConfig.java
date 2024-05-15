@@ -7,11 +7,15 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.jira.board.filter.JwtAuthenticationFilter;
 
@@ -29,32 +33,64 @@ public class WebSecurityConfig {
 
     @Bean
     protected SecurityFilterChain configure(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity
-            .csrf((auth) -> auth.disable());
-
-        // httpSecurity
-        //     .cors((auth) -> auth.disable());
 
         httpSecurity
-            .formLogin((auth) -> auth.disable());
+            .cors((auth) -> auth.configurationSource(corsConfigruationSource()))
+            .csrf(CsrfConfigurer::disable)
+            .sessionManagement(sessionManagement -> sessionManagement
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
+            .authorizeHttpRequests(request -> request 
+                .requestMatchers("/","/api/v1/auth/**","/api/v1/search/**", "/file/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/board/**", "/api/v1/user/**").permitAll()
+                .anyRequest().authenticated() 
+            )
+            .exceptionHandling(exceptionHandle -> exceptionHandle
+                .authenticationEntryPoint(new FailedAuthenticationEntryPoint())
+            )
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+            ;
 
-        httpSecurity
-            .httpBasic((auth) -> auth.disable());
+    //     httpSecurity
+    //         .csrf((auth) -> auth.disable()); 
 
-        httpSecurity
-            .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+    //     httpSecurity
+    //          .cors((auth) -> auth.configurationSource(corsConfigruationSource()));
 
-        httpSecurity 
-            .authorizeHttpRequests((auth) -> auth
-            .requestMatchers("/","/api/v1/auth/**","/api/v1/search/**", "/file/**").permitAll()
-            .requestMatchers(HttpMethod.GET, "/api/v1/board/**", "/api/v1/user/**").permitAll()
-            .anyRequest().authenticated());
+    //     httpSecurity
+    //         .formLogin((auth) -> auth.disable());
 
-        httpSecurity.exceptionHandling((exceptionHandle) -> exceptionHandle.authenticationEntryPoint(new FailedAuthenticationEntryPoint()));
+    //     httpSecurity
+    //         .httpBasic((auth) -> auth.disable());
 
-        httpSecurity.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+    //     httpSecurity
+    //         .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+        // httpSecurity 
+        //     .authorizeHttpRequests((auth) -> auth
+        //     .requestMatchers("/","/api/v1/auth/**","/api/v1/search/**", "/file/**").permitAll()
+        //     .requestMatchers(HttpMethod.GET, "/api/v1/board/**", "/api/v1/user/**").permitAll()
+        //     .anyRequest().authenticated());
+
+        // httpSecurity.exceptionHandling((exceptionHandle) -> exceptionHandle.authenticationEntryPoint(new FailedAuthenticationEntryPoint()));
+
+        // httpSecurity.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
        return httpSecurity.build();
+    }
+
+    @Bean
+    protected CorsConfigurationSource corsConfigruationSource(){
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.addAllowedOrigin("*");
+        configuration.addAllowedMethod("*");
+        configuration.addAllowedHeader("*");
+        configuration.addExposedHeader("*");
+        // configuration.setAllowCredentials(false);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
     
 }

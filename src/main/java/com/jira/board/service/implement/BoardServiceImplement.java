@@ -21,6 +21,7 @@ import com.jira.board.dto.response.board.GetFavoriteListResponseDto;
 import com.jira.board.dto.response.board.GetLatestBoardListResponseDto;
 import com.jira.board.dto.response.board.GetSearchBoardListResponseDto;
 import com.jira.board.dto.response.board.GetTop3BoardListResponseDto;
+import com.jira.board.dto.response.board.GetUserBoardListResponseDto;
 import com.jira.board.dto.response.board.IncreaseViewCountResponseDto;
 import com.jira.board.dto.response.board.PatchBoardResponseDto;
 import com.jira.board.dto.response.board.PostBoardResponseDto;
@@ -338,6 +339,26 @@ public class BoardServiceImplement implements BoardService{
             return ResponseDto.databaseError();
         }
         return GetSearchBoardListResponseDto.success(boardListViewEntities);
+    }
+
+    @Override
+    public ResponseEntity<? super GetUserBoardListResponseDto> getUserBoardList(String email) {
+
+        List<BoardListViewEntity> boardListViewEntities = new ArrayList<>();
+
+        try {
+
+            boolean existedUser = userRepository.existsByEmail(email);
+            if(!existedUser) return GetUserBoardListResponseDto.noExistUser();
+
+            boardListViewEntities = boardListViewRepository.findByWriterEmailOrderByWriteDatetimeDesc(email);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+
+        return GetUserBoardListResponseDto.success(boardListViewEntities);
     } 
 
 }

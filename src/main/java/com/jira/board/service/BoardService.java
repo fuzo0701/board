@@ -12,6 +12,7 @@ import com.jira.board.dto.response.board.GetFavoriteListResponseDto;
 import com.jira.board.dto.response.board.GetLatestBoardListResponseDto;
 import com.jira.board.dto.response.board.GetSearchBoardListResponseDto;
 import com.jira.board.dto.response.board.GetTop3BoardListResponseDto;
+import com.jira.board.dto.response.board.GetUserBoardListResponseDto;
 import com.jira.board.dto.response.board.IncreaseViewCountResponseDto;
 import com.jira.board.dto.response.board.PatchBoardResponseDto;
 import com.jira.board.dto.response.board.PostBoardResponseDto;
@@ -31,5 +32,6 @@ public interface BoardService {
     ResponseEntity<? super GetLatestBoardListResponseDto> getLatestBoardList();
     ResponseEntity<? super GetTop3BoardListResponseDto> getTop3BoardList();
     ResponseEntity<? super GetSearchBoardListResponseDto> getSearchBoardList(String searchWord, String preSearchWord);
+    ResponseEntity<? super GetUserBoardListResponseDto> getUserBoardList(String email);
 
 }
